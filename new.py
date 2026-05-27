@@ -38,16 +38,16 @@ queries = {
     "30. Countries with the most deep earthquakes": """SELECT country, COUNT(*) AS deep_earthquakes FROM earthquake_data WHERE depth_km > 300 GROUP BY country ORDER BY deep_earthquakes DESC;"""
 }
 
-# Page config
+
 st.set_page_config(page_title="Earthquake Data Analysis", layout="wide")
 
-# Sidebar
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Go to",
     ["Project Introduction", "SQL Queries", "My Work & Exploration", "Creator Info"]
 )
 
+#1
 if page == "Project Introduction":
 
 
@@ -95,9 +95,7 @@ if page == "Project Introduction":
         "SQL queries were used to analyze earthquake trends and magnitude."
     )
 
-  
-
-# Page 2: SQL Queries
+ #2 
 elif page == "SQL Queries":
     st.title("Earthquake SQL Queries")
     st.write("Select a query from the dropdown below to see the results.")
@@ -116,7 +114,7 @@ elif page == "SQL Queries":
             except Exception as e:
                 st.error(f"Query failed: {e}")
 
-
+#3
 elif page == "My Work & Exploration":
     st.title("My Work & Exploration")
  
@@ -145,12 +143,9 @@ elif page == "My Work & Exploration":
     st.write("Queries 11 & 12 couldn't be done — the dataset has no casualty or economic loss columns.")
     st.write("Query 29 (finding nearby earthquake pairs) is slow because it compares every row with every other row.")
                  
-
-# Page 4: Creator
+#4
 elif page == "Creator Info":
    
-    
-
     st.subheader(" About Me")
 
     st.write(
