@@ -1,5 +1,6 @@
 # Mini-Project---1
 DS_Global Seismic Trends
+
 This project analyzes global earthquake data collected from the USGS Earthquake API over the past five years.
 
 The data was extracted in JSON format using Python requests and converted into a Pandas DataFrame.
