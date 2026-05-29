@@ -6,36 +6,102 @@ import streamlit as st
 engine = create_engine("mysql+pymysql://root:9095@127.0.0.1:3306/work1")
 
 queries = {
-    "1. Top 10 strongest earthquakes": """SELECT place, country, mag, depth_km FROM earthquake_data ORDER BY mag DESC LIMIT 10;""",
-    "2. Top 10 deepest earthquakes": """SELECT place, country, mag, depth_km FROM earthquake_data ORDER BY depth_km DESC LIMIT 10;""",
-    "3. Shallow earthquakes < 50 km and mag > 7.5": """SELECT place, country, mag, depth_km, time FROM earthquake_data WHERE depth_km < 50 AND mag > 7.5 ORDER BY mag DESC;""",
-    "4. Average depth per country": """SELECT country, AVG(depth_km) AS avg_depth FROM earthquake_data GROUP BY country;""",
-    "5. Average magnitude per magnitude type": """SELECT magType, ROUND(AVG(mag), 2) AS avg_magnitude FROM earthquake_data GROUP BY magType ORDER BY avg_magnitude DESC;""",
-    "6. Year with most earthquakes": """SELECT YEAR(time) AS year, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY YEAR(time) ORDER BY total_earthquakes DESC LIMIT 1;""",
-    "7. Month with most earthquakes": """SELECT MONTH(time) AS month, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY MONTH(time) ORDER BY total_earthquakes DESC LIMIT 1;""",
-    "8. Day with most earthquakes": """SELECT DAYNAME(time) AS day_name, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY DAYNAME(time) ORDER BY total_earthquakes DESC LIMIT 1;""",
-    "9. Hour with most earthquakes": """SELECT HOUR(time) AS hour_of_day, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY HOUR(time) ORDER BY hour_of_day;""",
-    "10. Network with most earthquakes": """SELECT net, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY net ORDER BY total_earthquakes DESC LIMIT 1;""",
-    "11. Countries with most casualties": """__skip__""",
-    "12. Countries with most economic losses": """__skip__""",
-    "13. Average magnitude by alert level": """SELECT alert, ROUND(AVG(mag), 2) AS avg_magnitude FROM earthquake_data GROUP BY alert ORDER BY avg_magnitude DESC;""",
-    "14. Earthquake status distribution": """SELECT status, COUNT(*) AS total FROM earthquake_data GROUP BY status;""",
-    "15. Earthquake types distribution": """SELECT type, COUNT(*) AS total FROM earthquake_data GROUP BY type ORDER BY total DESC;""",
-    "16. Earthquake types distribution (alternative)": """SELECT types, COUNT(*) AS total FROM earthquake_data GROUP BY types ORDER BY total DESC;""",
-    "17. Countries with most earthquakes": """SELECT country, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY country ORDER BY total_earthquakes DESC LIMIT 5;""",
-    "18. Earthquakes with high reliability": """SELECT place, mag, nst FROM earthquake_data WHERE nst > 100 ORDER BY nst DESC;""",
-    "19. Tsunami events by year": """SELECT YEAR(time) AS year, COUNT(*) AS tsunami_events FROM earthquake_data WHERE tsunami = 1 GROUP BY YEAR(time) ORDER BY year;""",
-    "20. Earthquake alerts distribution": """SELECT alert, COUNT(*) AS total FROM earthquake_data GROUP BY alert ORDER BY total DESC;""",
-    "21. Countries with highest average magnitude": """SELECT country, ROUND(AVG(mag),2) AS avg_magnitude FROM earthquake_data GROUP BY country ORDER BY avg_magnitude DESC LIMIT 5;""",
-    "22. Countries with varying depth focus": """SELECT country, YEAR(time) AS year, MONTH(time) AS month FROM earthquake_data GROUP BY country, YEAR(time), MONTH(time) HAVING MIN(depth_km) < 70 AND MAX(depth_km) > 30;""",
-    "23. Yearly earthquake growth rate": """SELECT year, total_earthquakes, ROUND((total_earthquakes - LAG(total_earthquakes) OVER(ORDER BY year)) / LAG(total_earthquakes) OVER(ORDER BY year) * 100,2) AS growth_rate_percent FROM (SELECT YEAR(time) AS year, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY YEAR(time)) t;""",
-    "24. Countries with highest seismic activity": """SELECT country, COUNT(*) AS total_earthquakes, ROUND(AVG(mag),2) AS avg_magnitude, ROUND(COUNT(*) * AVG(mag),2) AS seismic_score FROM earthquake_data GROUP BY country ORDER BY seismic_score DESC LIMIT 3;""",
-    "25. Countries with highest average depth (equatorial)": """SELECT country, ROUND(AVG(depth_km),2) AS avg_depth FROM earthquake_data WHERE latitude BETWEEN -5 AND 5 GROUP BY country ORDER BY avg_depth DESC;""",
-    "26. Countries with highest shallow-to-deep ratio": """SELECT country, SUM(CASE WHEN depth_km < 70 THEN 1 ELSE 0 END) AS shallow_count, SUM(CASE WHEN depth_km > 300 THEN 1 ELSE 0 END) AS deep_count, ROUND(SUM(CASE WHEN depth_km < 70 THEN 1 ELSE 0 END) / NULLIF(SUM(CASE WHEN depth_km > 300 THEN 1 ELSE 0 END),0),2) AS shallow_deep_ratio FROM earthquake_data GROUP BY country ORDER BY shallow_deep_ratio DESC;""",
-    "27. Avg magnitude difference: tsunami vs non-tsunami": """SELECT tsunami, ROUND(AVG(mag),2) AS avg_magnitude FROM earthquake_data GROUP BY tsunami;""",
-    "28. Events with lowest data reliability": """SELECT place, country, rms, gap, ROUND((rms + gap)/2,2) AS error_score FROM earthquake_data ORDER BY error_score DESC LIMIT 20;""",
-    "29. Consecutive earthquakes within 50 km and 1 hour": """SELECT a.id AS quake1, b.id AS quake2, a.place, a.time, b.time FROM earthquake_data a JOIN earthquake_data b ON a.id < b.id WHERE TIMESTAMPDIFF(HOUR,a.time,b.time) <= 1 AND (6371 * ACOS(COS(RADIANS(a.latitude)) * COS(RADIANS(b.latitude)) * COS(RADIANS(b.longitude)-RADIANS(a.longitude)) + SIN(RADIANS(a.latitude)) * SIN(RADIANS(b.latitude)))) <= 50;""",
-    "30. Countries with the most deep earthquakes": """SELECT country, COUNT(*) AS deep_earthquakes FROM earthquake_data WHERE depth_km > 300 GROUP BY country ORDER BY deep_earthquakes DESC;"""
+    "1. Top 10 strongest earthquakes":
+    """SELECT place, country, mag, depth_km FROM earthquake_data ORDER BY mag DESC LIMIT 10;""",
+    
+    "2. Top 10 deepest earthquakes":
+    """SELECT place, country, mag, depth_km FROM earthquake_data ORDER BY depth_km DESC LIMIT 10;""",
+    
+    "3. Shallow earthquakes < 50 km and mag > 7.5": 
+    """SELECT place, country, mag, depth_km, time FROM earthquake_data WHERE depth_km < 50 AND mag > 7.5 ORDER BY mag DESC;""",
+    
+    "4. Average depth per country": 
+    """SELECT country, AVG(depth_km) AS avg_depth FROM earthquake_data GROUP BY country;""",
+    
+    "5. Average magnitude per magnitude type":
+    """SELECT magType, ROUND(AVG(mag), 2) AS avg_magnitude FROM earthquake_data GROUP BY magType ORDER BY avg_magnitude DESC;""",
+    
+    "6. Year with most earthquakes": 
+    """SELECT YEAR(time) AS year, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY YEAR(time) ORDER BY total_earthquakes DESC LIMIT 1;""",
+    
+    "7. Month with most earthquakes":
+    """SELECT MONTH(time) AS month, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY MONTH(time) ORDER BY total_earthquakes DESC LIMIT 1;""",
+    
+    "8. Day with most earthquakes": 
+    """SELECT DAYNAME(time) AS day_name, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY DAYNAME(time) ORDER BY total_earthquakes DESC LIMIT 1;""",
+    
+    "9. Hour with most earthquakes":
+    """SELECT HOUR(time) AS hour_of_day, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY HOUR(time) ORDER BY hour_of_day;""",
+    
+    "10. Network with most earthquakes": 
+    """SELECT net, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY net ORDER BY total_earthquakes DESC LIMIT 1;""",
+    
+    "11. Countries with most casualties": 
+    """__skip__""",
+    
+    "12. Countries with most economic losses":
+    """__skip__""",
+    
+    "13. Average magnitude by alert level": 
+    """SELECT alert, ROUND(AVG(mag), 2) AS avg_magnitude FROM earthquake_data GROUP BY alert ORDER BY avg_magnitude DESC;""",
+    
+    "14. Earthquake status distribution": 
+    """SELECT status, COUNT(*) AS total FROM earthquake_data GROUP BY status;""",
+    
+    "15. Earthquake types distribution": 
+    """SELECT type, COUNT(*) AS total FROM earthquake_data GROUP BY type ORDER BY total DESC;""",
+    
+    "16. Earthquake types distribution (alternative)":
+    """SELECT types, COUNT(*) AS total FROM earthquake_data GROUP BY types ORDER BY total DESC;""",
+    
+    "17. Countries with most earthquakes":
+    """SELECT country, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY country ORDER BY total_earthquakes DESC LIMIT 5;""",
+    
+    "18. Earthquakes with high reliability": 
+    """SELECT place, mag, nst FROM earthquake_data WHERE nst > 100 ORDER BY nst DESC;""",
+    
+    "19. Tsunami events by year": 
+    """SELECT YEAR(time) AS year, COUNT(*) AS tsunami_events FROM earthquake_data WHERE tsunami = 1 GROUP BY YEAR(time) ORDER BY year;""",
+    
+    "20. Earthquake alerts distribution": 
+    """SELECT alert, COUNT(*) AS total FROM earthquake_data GROUP BY alert ORDER BY total DESC;""",
+    
+    "21. Countries with highest average magnitude":
+    """SELECT country, ROUND(AVG(mag),2) AS avg_magnitude FROM earthquake_data GROUP BY country ORDER BY avg_magnitude DESC LIMIT 5;""",
+    
+    "22. Countries with varying depth focus": 
+    """SELECT country, YEAR(time) AS year, MONTH(time) AS month FROM earthquake_data
+    GROUP BY country, YEAR(time), MONTH(time) HAVING MIN(depth_km) < 70 AND MAX(depth_km) > 30;""",
+    
+    "23. Yearly earthquake growth rate": 
+    """SELECT year, total_earthquakes, ROUND((total_earthquakes - LAG(total_earthquakes) OVER(ORDER BY year)) / LAG(total_earthquakes) 
+    OVER(ORDER BY year) * 100,2) AS growth_rate_percent FROM (SELECT YEAR(time) AS year, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY YEAR(time)) t;""",
+    
+    "24. Countries with highest seismic activity":
+    """SELECT country, COUNT(*) AS total_earthquakes, ROUND(AVG(mag),2) AS avg_magnitude, ROUND(COUNT(*) * AVG(mag),2) AS seismic_score
+    FROM earthquake_data GROUP BY country ORDER BY seismic_score DESC LIMIT 3;""",
+    
+    "25. Countries with highest average depth (equatorial)": 
+    """SELECT country, ROUND(AVG(depth_km),2) AS avg_depth FROM earthquake_data WHERE latitude BETWEEN -5 AND 5 GROUP BY country ORDER BY avg_depth DESC;""",
+    
+    "26. Countries with highest shallow-to-deep ratio": 
+    """SELECT country, SUM(CASE WHEN depth_km < 70 THEN 1 ELSE 0 END) AS shallow_count, SUM(CASE WHEN depth_km > 300 THEN 1 ELSE 0 END) AS deep_count,
+    ROUND(SUM(CASE WHEN depth_km < 70 THEN 1 ELSE 0 END) / NULLIF(SUM(CASE WHEN depth_km > 300 THEN 1 ELSE 0 END),0),2) AS shallow_deep_ratio
+    FROM earthquake_data GROUP BY country ORDER BY shallow_deep_ratio DESC;""",
+    
+    "27. Avg magnitude difference: tsunami vs non-tsunami":
+    """SELECT tsunami, ROUND(AVG(mag),2) AS avg_magnitude FROM earthquake_data GROUP BY tsunami;""",
+    
+    "28. Events with lowest data reliability": 
+    """SELECT place, country, rms, gap, ROUND((rms + gap)/2,2) AS error_score FROM earthquake_data ORDER BY error_score DESC LIMIT 20;""",
+    
+    "29. Consecutive earthquakes within 50 km and 1 hour": 
+    """SELECT a.id AS quake1, b.id AS quake2, a.place, a.time, b.time FROM earthquake_data a JOIN earthquake_data b ON a.id < b.id 
+    WHERE TIMESTAMPDIFF(HOUR,a.time,b.time) <= 1 AND (6371 * ACOS(COS(RADIANS(a.latitude)) * COS(RADIANS(b.latitude)) * COS(RADIANS(b.longitude)-RADIANS(a.longitude))
+    + SIN(RADIANS(a.latitude)) * SIN(RADIANS(b.latitude)))) <= 50;""",
+    
+    "30. Countries with the most deep earthquakes": 
+    """SELECT country, COUNT(*) AS deep_earthquakes FROM earthquake_data WHERE depth_km > 300 GROUP BY country ORDER BY deep_earthquakes DESC;"""
 }
 
 
