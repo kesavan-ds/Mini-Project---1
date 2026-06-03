@@ -42,8 +42,8 @@ queries = {
     "12. Countries with most economic losses":
     """__skip__""",
     
-    "13. Average magnitude by alert level": 
-    """SELECT alert, ROUND(AVG(mag), 2) AS avg_magnitude FROM earthquake_data GROUP BY alert ORDER BY avg_magnitude DESC;""",
+    "13. Average economic by alert level": 
+    """__skip__""",
     
     "14. Earthquake status distribution": 
     """SELECT status, COUNT(*) AS total FROM earthquake_data GROUP BY status;""",
