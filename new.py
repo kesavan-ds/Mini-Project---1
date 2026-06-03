@@ -54,8 +54,9 @@ queries = {
     "16. Earthquake types distribution (alternative)":
     """SELECT types, COUNT(*) AS total FROM earthquake_data GROUP BY types ORDER BY total DESC;""",
     
-    "17. Countries with most earthquakes":
-    """SELECT country, COUNT(*) AS total_earthquakes FROM earthquake_data GROUP BY country ORDER BY total_earthquakes DESC LIMIT 5;""",
+    "17. Average RMS and gap per continent.":
+    """SELECT country, ROUND(AVG(rms),2) AS avg_rms, ROUND(AVG(gap),2) AS avg_gap
+      FROM earthquake_data GROUP BY country;""",
     
     "18. Earthquakes with high reliability": 
     """SELECT place, mag, nst FROM earthquake_data WHERE nst > 100 ORDER BY nst DESC;""",
@@ -71,7 +72,7 @@ queries = {
     
     "22. Countries with varying depth focus": 
     """SELECT country, YEAR(time) AS year, MONTH(time) AS month FROM earthquake_data
-    GROUP BY country, YEAR(time), MONTH(time) HAVING MIN(depth_km) < 70 AND MAX(depth_km) > 30;""",
+    GROUP BY country, YEAR(time), MONTH(time) HAVING MIN(depth_km) < 70 AND MAX(depth_km) > 300;""",
     
     "23. Yearly earthquake growth rate": 
     """SELECT year, total_earthquakes, ROUND((total_earthquakes - LAG(total_earthquakes) OVER(ORDER BY year)) / LAG(total_earthquakes) 
